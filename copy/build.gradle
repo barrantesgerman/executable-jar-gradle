@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-log4j12:1.7.30'
+}
+
+application {
+    mainClass.set('com.example.executable.Main')
+}
+
+task copyToLib(type: Copy) {
+    into "${buildDir}/libs/libs"
+    from configurations.runtimeClasspath
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'com.example.executable.Main',
+            "Class-Path":  configurations.runtimeClasspath.collect { 'libs/' + it.name }.join(' ') 
+        )
+    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    dependsOn(copyToLib)
+}
+
+
+//build.dependsOn(copyToLib)
+
