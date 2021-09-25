@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+}
+
+application {
+    mainClass.set('com.example.executable.Main')
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+            'Main-Class': 'com.example.executable.Main'
+        )
+    }
+    baseName = project.name + '-all'
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    from {
+        //Gradle 6.x
+        //configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        //Gradle 7.x
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
